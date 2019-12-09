@@ -94,3 +94,15 @@ void main(void)
         __delay_ms(100);
     }
 }
+/*
+ * @brief Affiche le tableau vu par le joueur durant le niveau à l'écran
+ * @param aucun
+ * @return aucun
+ */
+void afficheTabVue(void){
+    lcd_effaceAffichage();//efface toute donnée à l'écran
+    for(int i = 0; i < NB_LIGNE; i++){//affichage de chaque ligne
+        lcd_gotoXY(1, i+1);//place le curseur à l'emplacement prévu pour la ligne à afficher
+        lcd_putMessage(m_tabVue[i]);//affiche la ligne
+    }
+}
