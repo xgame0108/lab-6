@@ -17,3 +17,39 @@
  *     Compilateur: XC8 (version 2.00)
  *     Matériel: Carte démo du Pickit3. PIC 18F45K20
   */
+
+/****************** Liste des INCLUDES ****************************************/
+#include <xc.h>
+#include <stdbool.h>  // pour l'utilisation du type bool
+#include <conio.h>
+#include <stdio.h> 
+#include <stdlib.h>
+#include <string.h>
+#include "Lcd4Lignes.h"
+
+
+/********************** CONSTANTES *******************************************/
+#define _XTAL_FREQ 1000000 //Constante utilisée par __delay_ms(x). Doit = fréq interne du uC
+
+#define NB_LIGNE 4  //afficheur LCD 4x20
+#define NB_COL 20
+#define AXE_X 7  //canal analogique de l'axe x
+#define AXE_Y 6
+#define PORT_SW PORTBbits.RB1 //sw de la manette
+#define TUILE 2 //caractère cgram d'une tuile
+#define MINE 3 //caractère cgram d'une mine
+
+/********************** PROTOTYPES *******************************************/
+void initialisation(void);
+void initTabVue(void);
+void rempliMines(int nb);
+void metToucheCombien(void);
+char calculToucheCombien(int ligne, int colonne);
+void deplace(char* x, char* y);
+bool demine(char x, char y);
+void enleveTuilesAutour(char x, char y);
+bool gagne(int* pMines);
+void afficheTabVue(void);
+void afficheTabMine(void);
+char getAnalog(char canal);
+
