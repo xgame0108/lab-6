@@ -53,3 +53,44 @@ void afficheTabVue(void);
 void afficheTabMine(void);
 char getAnalog(char canal);
 
+
+/****************** VARIABLES GLOBALES ****************************************/
+ char m_tabVue[NB_LIGNE][NB_COL+1]; //Tableau des caractères affichés au LCD
+ char m_tabMines[NB_LIGNE][NB_COL+1];//Tableau contenant les mines, les espaces et les chiffres
+
+/*               ***** PROGRAMME PRINCPAL *****                             */
+void main(void)
+{
+    char x = 1;//coordonés cartésiennes du curseur du joueur sur l'écran
+    char y = 1;
+    int nbMines = 4;//nombre de mines du premier niveau
+    
+    initialisation();//initialise les registres internes du PIC
+    lcd_init();//initialisation de l'affichage LCD
+    //lcd_cacheCurseur();//cache le curseur pour une meilleure expérience visuelle
+    lcd_effaceAffichage();//efface l'affichage pour faire place au nouveau message
+    lcd_curseurHome();//met le curseur à zéro
+    
+    initTabVue();//initialise le tableau vu par le joueur
+    rempliMines(nbMines);//initialise le tableau caché contenant les mines
+    metToucheCombien();//calcule pour chaque cases combien de mines sont à proximité et met ce nombre dans la case
+    afficheTabVue();//affiche au joueur le tableau contenant les dalles
+    
+    while(1) //boucle principale
+    {
+        deplace(&x, &y);//déplace le curseur selon l'action du joueur
+        if(PORTBbits.RB1 == 0){//si le boutton est appuyé
+            if(!demine(x, y) || gagne(&nbMines)){//affiche ce qui se trouve sous la case et si des vases non minés sont restantes.
+                //dans le cas ou une mine se trouvait sous la case ou si il ne reste plus de cases minés:
+                afficheTabMine();//affiche la solution au niveau
+                while(!PORTBbits.RB1 == 0);//attends une entrée utilisateur
+                initTabVue();//réinitialise le tableau vu par le joueur
+                rempliMines(nbMines);// réinitialise le tableau caché contenant les mines
+                metToucheCombien();//recalcule pour chaque cases combien de mines sont à proximité et met ce nombre dans la case
+                afficheTabVue();//affiche au joueur le tableau contenant les dalles
+                lcd_gotoXY(x, y);//remet le curseur à la dernière position connue par le joueur
+            }
+        }
+        __delay_ms(100);
+    }
+}
