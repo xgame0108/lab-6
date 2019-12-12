@@ -143,21 +143,21 @@ void initTabVue(void){
  * @return rien
  */
 void rempliMines(int nb){
-    char col = 0;
+    char col = 0;//variable contenant temporairement les coordonés de la mine générée
     char ligne = 0;
     
-    for(int i = 0; i < NB_COL; i++){
+    for(int i = 0; i < NB_COL; i++){//remplis le tableau d'espaces
         for(int j = 0; j < NB_LIGNE; j++){
             m_tabMines[j][i] = 32;
         }
     }
     
-    for(int i = 0; i < nb; i++){
+    for(int i = 0; i < nb; i++){//pour le nombre de mines à générer
         do{
-           col = rand()%NB_COL;
+           col = rand()%NB_COL;//génere les coordonés de la nouvelle mine
            ligne = rand()%NB_LIGNE;
-        }while(m_tabMines[ligne][col] != 32);
-        m_tabMines[ligne][col] = MINE;
+        }while(m_tabMines[ligne][col] != 32);//recommence la génération si une mine se trouvait déjà à cet emplacement
+        m_tabMines[ligne][col] = MINE;//met la mine dans la matrice de mines à ses coordonés
     }
 }
  
@@ -173,8 +173,8 @@ void rempliMines(int nb){
 void metToucheCombien(void){
     for(int i = 0; i<NB_COL; i++){//boucle pour les lignes
         for(int j = 0; j<NB_LIGNE; j++){//boucle pour les colonnes
-            if(m_tabMines[j][i] != MINE){
-                m_tabMines[j][i] = calculToucheCombien(j, i);
+            if(m_tabMines[j][i] != MINE){//passe les cases qui contiennent une mine pour ne pas l'effacer
+                m_tabMines[j][i] = calculToucheCombien(j, i);//calcule combien de mines se trouvent dans un rayon de 1 autour de la case
             }
         }
     }
@@ -186,27 +186,27 @@ void metToucheCombien(void){
  * @return char nombre. Le nombre de mines touchées par la case
  */
 char calculToucheCombien(int ligne, int colonne){
-    int x = 0;
+    int x = 0;//variable contenant temporairement les coordonés de la case à vérifier
     int y = 0;
-    char total = 0;
+    char total = 0;//total de mines dans le rayon
 
-    for(int i = -1; i < 2; i++){
-        for(int j = -1; j < 2; j++){
-            if(j != 0 || i != 0){
-                x = colonne + i;
+    for(int i = -1; i < 2; i++){//rayon en x autour de la case
+        for(int j = -1; j < 2; j++){//rayon en y autour de la case
+            if(j != 0 || i != 0){//évite de vérifier la case centrale
+                x = colonne + i;//mise à jour des coordonés à vérifier pour créer la zone
                 y = ligne + j;
-                if(x >= 0 && x < NB_COL && y >= 0 && y < NB_LIGNE){
-                    if(m_tabMines[y][x] == MINE){
+                if(x >= 0 && x < NB_COL && y >= 0 && y < NB_LIGNE){//si la case se trouve à l'intérieur de la zone de jeu
+                    if(m_tabMines[y][x] == MINE){//si la case contient une mine, incrémente le total de 1
                         total++;
                     }
                 }
             }
         }
     }
-    if(total == 0){
+    if(total == 0){//retourne la valeur ASCII d'espace si aucune mine est à proximité
         return 32;
     }
-    return total+48;
+    return total+48;//retourne la valeur ASCII correspondant au nombre de mines à proximité
 }
  
 /**
@@ -216,34 +216,33 @@ char calculToucheCombien(int ligne, int colonne){
  * @return rien
  */
 void deplace(char* px, char* py){
-    int aX = getAnalog(AXE_X);
+    int aX = getAnalog(AXE_X);//lecture des ports analogiques reliés aux joystics
     int aY = getAnalog(AXE_Y);
     
-    if(aX < 100){//reste à créer les limites et la "téléportation" d'un coté à l'autre.
-        (*px)--;
-        if(*px <= 0){
+    if(aX < 100){//joystick vers la gauche
+        (*px)--;//décrémente les coordonés du curseur en x
+        if(*px <= 0){//vérifie si il est sorti de la zone de jeu si oui, retourne le curseur à l'opposé de l'écran
             *px = NB_COL;
         }
-        lcd_gotoXY((*px), (*py));
-    }else if(aX > 150){
-        (*px)++;
-        if(*px > NB_COL){
+        lcd_gotoXY((*px), (*py));//mise à jour de la position du curseur
+    }else if(aX > 150){//joystick vers la droite
+        (*px)++;//incrémente les coordonés du curseur en x
+        if(*px > NB_COL){//vérifie si il est sorti de la zone de jeu si oui, retourne le curseur à l'opposé de l'écran
             *px = 1;
         }
-        lcd_gotoXY((*px), (*py));
-    }else if(aY < 100){
-        (*py)++;
-        if(*py > NB_LIGNE){
+        lcd_gotoXY((*px), (*py));//mise à jour de la position du curseur
+    }else if(aY < 100){//joystick vers le haut
+        (*py)++;//incrémente les coordonés du curseur en y
+        if(*py > NB_LIGNE){//vérifie si il est sorti de la zone de jeu si oui, retourne le curseur à l'opposé de l'écran
             *py = 1;
         }
-        lcd_gotoXY((*px), (*py));
-    }else if(aY > 150){
-        (*py)--;
-        if(*py <= 0){
+        lcd_gotoXY((*px), (*py));//mise à jour de la position du curseur
+    }else if(aY > 150){//joystick vers le bas
+        (*py)--;//décrémente les coordonés du curseur en y
+        if(*py <= 0){//vérifie si il est sorti de la zone de jeu si oui, retourne le curseur à l'opposé de l'écran
             *py = NB_LIGNE;
-            
         }
-        lcd_gotoXY((*px), (*py));
+        lcd_gotoXY((*px), (*py));//mise à jour de la position du curseur
     }
     
     
@@ -259,23 +258,23 @@ void deplace(char* px, char* py){
  */
 bool demine(char x, char y){
     
-    while(PORTBbits.RB1 == 0);
+    while(PORTBbits.RB1 == 0);//debounce du bouton
     
-    x--;
+    x--;//translation des coordonés pour etre compatibles avec la matrice de mine et non ave l'écran
     y--;
     
-    if(m_tabMines[y][x] == MINE){
-        lcd_gotoXY(x+1, y+1);
-        return false;
+    if(m_tabMines[y][x] == MINE){//si le joueur démine sur une mine
+        lcd_gotoXY(x+1, y+1);// met le curseur à l'endroir correspondant à la mine
+        return false;//indique au programme que le joueur a perdu
     }
-    if(m_tabMines[y][x] == 32){
-        enleveTuilesAutour(x, y);
-    }else if(m_tabMines[y][x] >= 48){
-        m_tabVue[y][x] = m_tabMines[y][x];
+    if(m_tabMines[y][x] == 32){//si joueur démine sur une case vide sans mine autour
+        enleveTuilesAutour(x, y);//dégage les 8 cases autour de la case du curseur
+    }else if(m_tabMines[y][x] >= 48){//si la case est à proximité d'une mine
+        m_tabVue[y][x] = m_tabMines[y][x];//affiche seulement la case jouée
     }
-    afficheTabVue();
-    lcd_gotoXY(x+1, y+1);
-    return true;
+    afficheTabVue();//mise à jour de l'écran
+    lcd_gotoXY(x+1, y+1);//mise à jour des coordonés du curseur
+    return true;//indique au programme que le déminage est réussi
 }
  
 /*
@@ -286,16 +285,16 @@ bool demine(char x, char y){
  */
 void enleveTuilesAutour(char x, char y){
     
-    char colonne = 0;
+    char colonne = 0;//variable contenant temporairement les coordonés de la case à dégager
     char ligne = 0;
     
-    for(int i = -1; i < 2; i++){
-            for(int j = -1; j < 2; j++){
-                colonne = x + i;
-                ligne = y + j;
-                m_tabVue[ligne][colonne] = m_tabMines[ligne][colonne];
-            }
-        }
+    for(int i = -1; i < 2; i++){//boucle en X
+		for(int j = -1; j < 2; j++){//boucle en Y
+			colonne = x + i;//mise à jour des coordonés à vérifier pour créer la zone
+			ligne = y + j;
+			m_tabVue[ligne][colonne] = m_tabMines[ligne][colonne];//met à jour les cases à afficher pour montrer les cases du tableau de mines
+		}
+    }
 }
  
 /*
@@ -306,15 +305,15 @@ void enleveTuilesAutour(char x, char y){
  * @return vrai si gagné, faux sinon
  */
 bool gagne(int* pMines){
-    char ttl = 0;
+    char ttl = 0;//total des cases non révélés
     for(int i = 0; i<NB_LIGNE; i++){//boucle pour les lignes
         for(int j = 0; j<NB_COL; j++){//boucle pour les colonnes
-            if(m_tabVue[i][j] == TUILE){
+            if(m_tabVue[i][j] == TUILE){//incrémente le total si la sace est une tuile
                 ttl++;
             }
         }
     }
-    if(ttl == (*pMines)){
+    if(ttl == (*pMines)){//si le nombre de tuiles restantes correspond au nombre de mines cachés, je joueur a gagné et le nombre de mines pour la prochaine partie augmente de 1
         (*pMines)++;
         return true;
     }
